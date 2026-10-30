@@ -1,8 +1,19 @@
 # 🏥 Botica Nova Salud — Sistema Web de Gestión de Inventario y Ventas
 
-Sistema web fullstack diseñado para la gestión centralizada de inventario farmacéutico, ventas rápidas en punto de atención (POS) y generación automática de alertas para reposición de medicamentos con stock crítico.
-
-Desarrollado con una arquitectura desacoplada: **Backend en Node.js + Express** con consultas relacionales en **MySQL**, y **Frontend en HTML5, CSS3, JavaScript** con efectos visuales dinámicos y retroalimentación sonora interactiva.
+<table>
+  <tr>
+    <td valign="middle" width="65%">
+      <strong>Sistema web fullstack</strong> diseñado para la gestión centralizada de inventario farmacéutico, ventas rápidas en punto de atención (POS) y generación automática de alertas para reposición de medicamentos con stock crítico. <br><br>
+      Desarrollado con una arquitectura desacoplada: **Backend en Node.js + Express** con consultas relacionales en **MySQL**, y **Frontend en HTML5, CSS3, JavaScript** con efectos visuales dinámicos y retroalimentación sonora interactiva.
+    </td>
+    <td align="center" valign="middle" width="35%">
+      <picture>
+        <source srcset="https://user-images.githubusercontent.com/74038190/212257460-738ff738-247f-4445-a718-cdd0ca76e2db.gif">
+        <img src="" width="200" alt="Node.js">
+      </picture>
+    </td>
+  </tr>
+</table>
 
 ---
 
