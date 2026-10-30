@@ -178,7 +178,7 @@ Botica_Net/
 
 |  Mateo Vicente | Miguel Córdova |
 | :---: | :---: |
-| 🚀 Android Developer | 🚀 Android Developer |
+| 🚀 FullStack Developer | 🚀 FullStack Developer |
 | <picture><img src="https://github.com/mrpeak-1/MiniCientificos-Android/blob/main/.github-assets/programmer.gif?raw=true" width="200" alt="James"></picture> | <picture><img src="https://github.com/mrpeak-1/MiniCientificos-Android/blob/main/.github-assets/programmer.gif?raw=true" width="200" alt="Mateo"></picture> |
 
 <br>
