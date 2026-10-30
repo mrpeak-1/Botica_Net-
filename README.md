@@ -28,7 +28,7 @@ Antes de comenzar, asegúrate de tener instalado en tu computadora:
   * En **XAMPP**, el usuario por defecto es `root` y la contraseña está **vacía** (`''`).
   * Si tu servidor MySQL tiene una contraseña (ej: `root`, `1234`, `admin`), debes configurarla en el archivo `db.js` en la línea:
     ```javascript
-    password: process.env.DB_PASSWORD || 'TU_CONTRASEÑA_AQUI'
+    password: 'TU_CONTRASEÑA_AQUI'
     ```
 * 👉 **Asegúrate de haber ejecutado `npm install`:** Si acabas de clonar o descargar el proyecto, las carpetas de dependencias (`express`, `mysql2`) deben estar instaladas.
 * 👉 **Asegúrate de que el puerto 3000 esté libre:** El servidor web correrá en `http://localhost:3000`. Si otra aplicación ya ocupa el puerto 3000, cámbialo en `index.js`.
