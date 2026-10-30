@@ -23,7 +23,7 @@ Antes de comenzar, asegúrate de tener instalado en tu computadora:
 > Revisa estos puntos antes de iniciar el proyecto para evitar los errores más comunes:
 
 * 👉 **Asegúrate de tener XAMPP / WampServer / MySQL corriendo:** El servicio de MySQL debe estar en estado *Running* (en verde en el panel de control de XAMPP) antes de ejecutar cualquier comando de Node.js.
-* 👉 **Asegúrate de haber importado el archivo `database.sql`:** La base de datos `botica_novasalud` y sus tablas deben estar creadas previamente en tu gestor MySQL.
+* 👉 **Asegúrate de haber importado el archivo `database.sql`:** La base de datos `botica_bd` y sus tablas deben estar creadas previamente en tu gestor MySQL.
 * 👉 **Asegúrate de verificar tu contraseña de MySQL:**
   * En **XAMPP**, el usuario por defecto es `root` y la contraseña está **vacía** (`''`).
   * Si tu servidor MySQL tiene una contraseña (ej: `root`, `1234`, `admin`), debes configurarla en el archivo `db.js` en la línea:
