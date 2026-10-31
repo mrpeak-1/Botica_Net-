@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema Web de Gestión de Inventario, Alertas de Reposición y Punto de Venta (POS) para Botica Nova Salud - FarmaPlus.">
+    <meta name="theme-color" content="#0f766e">
+
+    <!-- OpenGraph / SEO Técnico -->
+    <meta property="og:title" content="Botica Nova Salud (FarmaPlus) | Sistema POS e Inventario Clínico">
+    <meta property="og:description" content="Despacho farmacéutico rápido, control atómico de existencias y alertas tempranas de reposición en tiempo real.">
+    <meta property="og:type" content="website">
+
+    <title>Botica Nova Salud (FarmaPlus) — POS &amp; Gestión de Inventario</title>
+
+    <!-- Preconexiones para optimizar LCP y Core Web Vitals -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Tipografía clínica de alta legibilidad (Plus Jakarta Sans & JetBrains Mono para montos/códigos) -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Librería Hover.css (Especificación Sección 5.1 del PLAN.md) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css">
+
+    <!-- Iconografía clínica y de interfaz (FontAwesome 6) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Hoja de estilos principal del proyecto (Fase 3) -->
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <!-- Enlace de salto rápido para accesibilidad por teclado -->
+    <a href="#contenido-principal" class="skip-link">Saltar al contenido principal</a>
+
+    <!-- ===================================================================
+         1. HEADER / NAVEGACIÓN Y HERO INTERACTIVO
+         =================================================================== -->
+    <header class="site-header" id="inicio">
+        <!-- Barra superior institucional -->
+        <div class="topbar">
+            <div class="topbar-brand">
+                <div class="brand-logo" aria-hidden="true">
+                    <i class="fa-solid fa-staff-snake"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-badge">FarmaPlus Sistema Clínico v1.0</span>
+                    <h1 class="brand-title">Botica &ldquo;Nova Salud&rdquo;</h1>
+                </div>
+            </div>
+
+            <!-- Navegación rápida por módulos -->
+            <nav class="main-nav" aria-label="Navegación principal del sistema">
+                <ul class="nav-list">
+                    <li>
+                        <a href="#seccion-pos" class="nav-link hvr-underline-from-left active">
+                            <i class="fa-solid fa-cash-register" aria-hidden="true"></i>
+                            <span>Punto de Venta (POS)</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#seccion-alertas" class="nav-link hvr-underline-from-left">
+                            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                            <span>Alertas de Stock</span>
+                            <span id="nav-badge-alertas" class="badge badge-danger" aria-label="Productos en alerta">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#seccion-inventario" class="nav-link hvr-underline-from-left">
+                            <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
+                            <span>Inventario Rápido</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#seccion-historial" class="nav-link hvr-underline-from-left">
+                            <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
+                            <span>Historial de Ventas</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Acciones globales: Audio Web API y Alta Rápida -->
+            <div class="topbar-actions">
+                <button
+                    type="button"
+                    id="btn-toggle-audio"
+                    class="btn btn-icon hvr-grow"
+                    aria-pressed="true"
+                    aria-label="Activar o silenciar efectos de sonido del sistema"
+                    title="Sonidos UI (Web Audio API): Activados">
+                    <i class="fa-solid fa-volume-high" id="icono-audio" aria-hidden="true"></i>
+                    <span class="btn-label-sm">Audio UI</span>
+                </button>
+
+                <button
+                    type="button"
+                    id="btn-nuevo-producto-header"
+                    class="btn btn-primary hvr-grow hvr-sweep-to-right"
+                    aria-haspopup="dialog"
+                    aria-controls="modal-producto">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    <span>Nuevo Medicamento</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero interactivo con Indicadores en Vivo (KPIs) y Visor 3D / Canvas -->
+        <section class="hero-banner" aria-label="Resumen operativo en tiempo real">
+            <div class="hero-content">
+                <div class="hero-copy">
+                    <p class="hero-eyebrow">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        Terminal de Despacho Farmacéutico en Línea
+                    </p>
+                    <h2 class="hero-heading">Control de Stock Atómico y Atención Rápida al Paciente</h2>
+                    <p class="hero-description">
+                        Consulta existencias en tiempo real, procesa comprobantes con descuento inmediato en base de datos y supervisa el umbral crítico de reposición (<code>stock &le; stock_minimo</code>).
+                    </p>
+                </div>
+
+                <!-- Indicadores Globales en Vivo (Sección 5.2.1 del PLAN.md) -->
+                <div class="kpi-grid" role="region" aria-label="Indicadores clave de inventario y ventas">
+                    <!-- KPI 1: Total Productos -->
+                    <article class="kpi-card" id="card-kpi-productos">
+                        <div class="kpi-icon kpi-icon-teal" aria-hidden="true">
+                            <i class="fa-solid fa-pills"></i>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Total Productos</span>
+                            <strong class="kpi-value" id="kpi-total-productos" aria-live="polite">0</strong>
+                            <span class="kpi-subtext" id="kpi-unidades-totales">0 unidades en almacén</span>
+                        </div>
+                    </article>
+
+                    <!-- KPI 2: Productos en Alerta -->
+                    <article class="kpi-card kpi-card-warning" id="card-kpi-alertas">
+                        <div class="kpi-icon kpi-icon-amber" aria-hidden="true">
+                            <i class="fa-solid fa-bell-concierge"></i>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Productos en Alerta</span>
+                            <strong class="kpi-value" id="kpi-productos-alerta" aria-live="polite">0</strong>
+                            <span class="kpi-subtext">Requieren reposición inmediata</span>
+                        </div>
+                    </article>
+
+                    <!-- KPI 3: Total Ventas Hoy -->
+                    <article class="kpi-card kpi-card-emerald" id="card-kpi-ventas">
+                        <div class="kpi-icon kpi-icon-emerald" aria-hidden="true">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Total Ventas Hoy</span>
+                            <strong class="kpi-value" id="kpi-ventas-hoy" aria-live="polite">S/ 0.00</strong>
+                            <span class="kpi-subtext" id="kpi-cantidad-ventas">0 comprobantes emitidos</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Contenedor Visual 3D (Spline Viewer / Canvas de Partículas Médicas) con dimensiones explícitas anti-CLS -->
+            <div class="hero-visual" id="hero-visual-container" aria-label="Visualización interactiva médica 3D">
+                <div class="visual-frame" style="min-height: 240px; aspect-ratio: 16 / 9;">
+                    <!-- Canvas interactivo de partículas médicas (fallback inmediato y ligero) -->
+                    <canvas
+                        id="particulas-canvas"
+                        width="480"
+                        height="270"
+                        aria-label="Animación interactiva de moléculas médicas">
+                    </canvas>
+
+                    <!-- Visor 3D Spline opcional (activable desde app.js sin bloquear el hilo principal) -->
+                    <div id="spline-container" class="spline-wrapper" hidden>
+                        <spline-viewer
+                            id="spline-medico"
+                            loading-anim-type="spinner-small-dark">
+                        </spline-viewer>
+                    </div>
+
+                    <div class="visual-overlay-badge">
+                        <i class="fa-solid fa-shield-heart" aria-hidden="true"></i>
+                        <span>Sincronización MySQL Activa</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <!-- ===================================================================
+         CONTENIDO PRINCIPAL DEL SISTEMA
+         =================================================================== -->
+    <main id="contenido-principal" class="main-container">
+
+        <!-- ===============================================================
+             2. MÓDULO DE PUNTO DE VENTA (POS) — Catálogo + Carrito Lateral
+             =============================================================== -->
+        <section id="seccion-pos" class="module-section pos-layout" aria-labelledby="titulo-pos">
+            <!-- Columna Izquierda: Buscador y Grilla Interactiva de Medicamentos -->
+            <div class="pos-catalogo-panel">
+                <header class="section-header">
+                    <div>
+                        <span class="section-tag">Despacho Rápido</span>
+                        <h2 id="titulo-pos" class="section-title">
+                            <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
+                            Punto de Venta (POS)
+                        </h2>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-recargar-catalogo"
+                        class="btn btn-outline hvr-grow"
+                        aria-label="Actualizar catálogo de medicamentos">
+                        <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                        <span>Actualizar Stock</span>
+                    </button>
+                </header>
+
+                <!-- Barra de Búsqueda en Tiempo Real y Filtro por Categoría -->
+                <div class="pos-filters" role="search" aria-label="Filtrar catálogo de medicamentos">
+                    <div class="search-input-wrapper">
+                        <label for="buscar-pos" class="sr-only">Buscar medicamento por nombre o categoría</label>
+                        <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                        <input
+                            type="search"
+                            id="buscar-pos"
+                            class="form-control search-input"
+                            placeholder="Buscar medicamento (ej. Paracetamol, Amoxicilina, Ibuprofeno)..."
+                            autocomplete="off">
+                        <kbd class="search-shortcut" aria-hidden="true">Ctrl + K</kbd>
+                    </div>
+
+                    <div class="category-select-wrapper">
+                        <label for="filtro-categoria-pos" class="sr-only">Filtrar por categoría farmacológica</label>
+                        <select id="filtro-categoria-pos" class="form-select">
+                            <option value="TODAS">Todas las categorías</option>
+                            <option value="Analgésicos">Analgésicos</option>
+                            <option value="Antiinflamatorios">Antiinflamatorios</option>
+                            <option value="Antibióticos">Antibióticos</option>
+                            <option value="Antihistamínicos">Antihistamínicos</option>
+                            <option value="Gastroenterología">Gastroenterología</option>
+                            <option value="Respiratorios">Respiratorios</option>
+                            <option value="Vitaminas">Vitaminas</option>
+                            <option value="Cuidado Personal">Cuidado Personal</option>
+                            <option value="Material Médico">Material Médico</option>
+                            <option value="Dispositivos Médicos">Dispositivos Médicos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grilla Interactiva de Medicamentos (poblada dinámicamente por app.js desde GET /api/productos) -->
+                <div
+                    id="grid-productos"
+                    class="productos-grid"
+                    role="region"
+                    aria-live="polite"
+                    aria-label="Catálogo de medicamentos disponibles">
+                    <!-- Estado inicial Skeleton mientras responde la API -->
+                    <article class="producto-card skeleton-card" aria-hidden="true">
+                        <div class="skeleton-line skeleton-badge"></div>
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-price"></div>
+                        <div class="skeleton-line skeleton-btn"></div>
+                    </article>
+                    <article class="producto-card skeleton-card" aria-hidden="true">
+                        <div class="skeleton-line skeleton-badge"></div>
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-price"></div>
+                        <div class="skeleton-line skeleton-btn"></div>
+                    </article>
+                    <article class="producto-card skeleton-card" aria-hidden="true">
+                        <div class="skeleton-line skeleton-badge"></div>
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-price"></div>
+                        <div class="skeleton-line skeleton-btn"></div>
+                    </article>
+                </div>
+
+                <!-- Estado vacío cuando la búsqueda no arroja coincidencias -->
+                <div id="pos-sin-resultados" class="empty-state" hidden>
+                    <i class="fa-solid fa-magnifying-glass-minus empty-icon" aria-hidden="true"></i>
+                    <h3>No se encontraron medicamentos</h3>
+                    <p>Intenta con otro término o selecciona &ldquo;Todas las categorías&rdquo;.</p>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Carrito de Despacho y Emisión de Comprobante -->
+            <aside id="panel-carrito" class="pos-carrito-panel" aria-labelledby="titulo-carrito">
+                <div class="carrito-card">
+                    <header class="carrito-header">
+                        <div class="carrito-title-group">
+                            <h3 id="titulo-carrito">
+                                <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+                                Orden de Despacho
+                            </h3>
+                            <span id="carrito-contador" class="badge badge-teal">0 ítems</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="btn-vaciar-carrito"
+                            class="btn btn-ghost-danger btn-sm"
+                            aria-label="Vaciar todos los medicamentos del carrito"
+                            disabled>
+                            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                            <span>Limpiar</span>
+                        </button>
+                    </header>
+
+                    <!-- Formulario de Venta (POST /api/ventas) -->
+                    <form id="form-venta" class="carrito-form" novalidate>
+                        <!-- Datos del Cliente / Paciente -->
+                        <div class="form-group">
+                            <label for="input-cliente" class="form-label">
+                                <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+                                Cliente / Paciente
+                            </label>
+                            <input
+                                type="text"
+                                id="input-cliente"
+                                name="cliente"
+                                class="form-control"
+                                placeholder="Público General o nombre del cliente"
+                                value="Público General"
+                                maxlength="100"
+                                required>
+                        </div>
+
+                        <!-- Lista de Ítems en el Carrito -->
+                        <div
+                            id="carrito-items"
+                            class="carrito-items-container"
+                            role="region"
+                            aria-live="polite"
+                            aria-label="Medicamentos agregados al comprobante">
+                            <div class="carrito-empty" id="carrito-vacio-msg">
+                                <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+                                <p>Selecciona medicamentos del catálogo para iniciar el despacho.</p>
+                            </div>
+                        </div>
+
+                        <!-- Resumen de Importes -->
+                        <div class="carrito-summary" aria-label="Resumen de importes de la venta">
+                            <div class="summary-row">
+                                <span>Operación Gravada (Ref.)</span>
+                                <span id="carrito-subtotal" class="mono-text">S/ 0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>IGV (18% incluido)</span>
+                                <span id="carrito-igv" class="mono-text">S/ 0.00</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Total a Pagar</span>
+                                <strong id="carrito-total" class="mono-text total-amount">S/ 0.00</strong>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Confirmación con clases Hover.css especificadas en PLAN.md (5.2.2) -->
+                        <button
+                            type="submit"
+                            id="btn-confirmar-venta"
+                            class="btn btn-Confirmar btn-block hvr-grow hvr-sweep-to-right"
+                            disabled>
+                            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                            <span id="texto-btn-venta">Confirmar Venta y Descontar Stock</span>
+                        </button>
+                    </form>
+                </div>
+            </aside>
+        </section>
+
+        <!-- ===============================================================
+             3. MÓDULO DE ALERTAS DE REPOSICIÓN (BAJO STOCK: stock <= stock_minimo)
+             =============================================================== -->
+        <section id="seccion-alertas" class="module-section alertas-section" aria-labelledby="titulo-alertas">
+            <header class="section-header">
+                <div>
+                    <span class="section-tag section-tag-warning">Control Preventivo de Desabastecimiento</span>
+                    <h2 id="titulo-alertas" class="section-title">
+                        <i class="fa-solid fa-triangle-exclamation text-warning" aria-hidden="true"></i>
+                        Alertas de Reposición (Bajo Stock)
+                    </h2>
+                    <p class="section-subtitle">
+                        Medicamentos cuyas existencias actuales han alcanzado o caído por debajo del umbral mínimo permitido (<code>stock &le; stock_minimo</code>).
+                    </p>
+                </div>
+
+                <div class="section-header-actions">
+                    <span id="badge-total-alertas" class="badge badge-danger-lg">0 productos críticos</span>
+                    <button
+                        type="button"
+                        id="btn-refrescar-alertas"
+                        class="btn btn-outline hvr-grow"
+                        aria-label="Verificar alertas de bajo stock">
+                        <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+                        <span>Verificar Alertas</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Grilla de Tarjetas de Alerta (poblada por app.js desde GET /api/alertas) -->
+            <div
+                id="grid-alertas"
+                class="alertas-grid"
+                role="region"
+                aria-live="polite"
+                aria-label="Lista de medicamentos en estado crítico de stock">
+                <!-- Estado por defecto antes de cargar datos -->
+                <div id="alertas-sin-datos" class="empty-state empty-state-success" hidden>
+                    <i class="fa-solid fa-circle-check empty-icon" aria-hidden="true"></i>
+                    <h3>Abastecimiento Óptimo</h3>
+                    <p>Todos los medicamentos superan actualmente su umbral de stock mínimo.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             4. MÓDULO DE INVENTARIO RÁPIDO (TABLA + BUSCADOR + ALTA DE MEDICAMENTOS)
+             =============================================================== -->
+        <section id="seccion-inventario" class="module-section inventario-section" aria-labelledby="titulo-inventario">
+            <header class="section-header">
+                <div>
+                    <span class="section-tag">Almacén Central</span>
+                    <h2 id="titulo-inventario" class="section-title">
+                        <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
+                        Módulo de Inventario General
+                    </h2>
+                </div>
+
+                <div class="inventario-toolbar">
+                    <div class="search-input-wrapper search-compact">
+                        <label for="buscar-inventario" class="sr-only">Filtrar tabla de inventario</label>
+                        <i class="fa-solid fa-filter search-icon" aria-hidden="true"></i>
+                        <input
+                            type="search"
+                            id="buscar-inventario"
+                            class="form-control"
+                            placeholder="Filtrar en tabla por nombre o categoría..."
+                            autocomplete="off">
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-abrir-modal-producto"
+                        class="btn btn-primary hvr-grow hvr-sweep-to-right"
+                        aria-haspopup="dialog"
+                        aria-controls="modal-producto">
+                        <i class="fa-solid fa-prescription-bottle-medical" aria-hidden="true"></i>
+                        <span>Registrar Medicamento</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Tabla Responsiva de Inventario -->
+            <div class="table-responsive" role="region" aria-labelledby="titulo-inventario" tabindex="0">
+                <table class="data-table" id="tabla-inventario">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Medicamento / Presentación</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col" class="text-right">Precio Unit.</th>
+                            <th scope="col" class="text-center">Stock Actual</th>
+                            <th scope="col" class="text-center">Stock Mínimo</th>
+                            <th scope="col" class="text-center">Estado de Abastecimiento</th>
+                            <th scope="col" class="text-center">Acción Rápida</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-inventario-body" aria-live="polite">
+                        <tr>
+                            <td colspan="8" class="table-loading">
+                                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                                Cargando inventario desde la base de datos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===============================================================
+             5. MÓDULO DE HISTORIAL RECIENTE DE VENTAS (GET /api/ventas)
+             =============================================================== -->
+        <section id="seccion-historial" class="module-section historial-section" aria-labelledby="titulo-historial">
+            <header class="section-header">
+                <div>
+                    <span class="section-tag">Trazabilidad y Caja</span>
+                    <h2 id="titulo-historial" class="section-title">
+                        <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
+                        Historial Reciente de Comprobantes
+                    </h2>
+                </div>
+
+                <button
+                    type="button"
+                    id="btn-refrescar-historial"
+                    class="btn btn-outline hvr-grow"
+                    aria-label="Actualizar historial de ventas recientes">
+                    <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                    <span>Actualizar Historial</span>
+                </button>
+            </header>
+
+            <div class="table-responsive" role="region" aria-labelledby="titulo-historial" tabindex="0">
+                <table class="data-table" id="tabla-ventas">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID Venta</th>
+                            <th scope="col">N.° Comprobante</th>
+                            <th scope="col">Cliente / Paciente</th>
+                            <th scope="col" class="text-right">Monto Total</th>
+                            <th scope="col" class="text-right">Fecha y Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-ventas-body" aria-live="polite">
+                        <tr>
+                            <td colspan="5" class="table-loading">
+                                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                                Consultando últimos comprobantes emitidos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===================================================================
+         6. MODAL EMERGENTE: REGISTRAR NUEVO MEDICAMENTO (POST /api/productos)
+         Animado con Anime.js según Sección 5.2.4 del PLAN.md
+         =================================================================== -->
+    <div
+        id="modal-producto"
+        class="modal-backdrop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-producto-titulo"
+        aria-hidden="true"
+        hidden>
+        <div class="modal-dialog" id="modal-producto-card">
+            <header class="modal-header">
+                <div>
+                    <span class="section-tag">Catálogo Farmacéutico</span>
+                    <h2 id="modal-producto-titulo" class="modal-title">
+                        <i class="fa-solid fa-capsules" aria-hidden="true"></i>
+                        Registrar Nuevo Medicamento
+                    </h2>
+                </div>
+                <button
+                    type="button"
+                    id="btn-cerrar-modal"
+                    class="btn-close"
+                    aria-label="Cerrar ventana de registro">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <form id="form-nuevo-producto" class="modal-form" novalidate>
+                <div class="form-group">
+                    <label for="prod-nombre" class="form-label">
+                        Nombre y Presentación del Medicamento <span class="required-mark">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="prod-nombre"
+                        name="nombre"
+                        class="form-control"
+                        placeholder="Ej: Ibuprofeno 400mg (Blister x 10)"
+                        maxlength="100"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-categoria" class="form-label">
+                        Categoría Farmacológica <span class="required-mark">*</span>
+                    </label>
+                    <select id="prod-categoria" name="categoria" class="form-select" required>
+                        <option value="" disabled selected>Seleccione una categoría...</option>
+                        <option value="Analgésicos">Analgésicos</option>
+                        <option value="Antiinflamatorios">Antiinflamatorios</option>
+                        <option value="Antibióticos">Antibióticos</option>
+                        <option value="Antihistamínicos">Antihistamínicos</option>
+                        <option value="Gastroenterología">Gastroenterología</option>
+                        <option value="Respiratorios">Respiratorios</option>
+                        <option value="Vitaminas">Vitaminas</option>
+                        <option value="Cuidado Personal">Cuidado Personal</option>
+                        <option value="Material Médico">Material Médico</option>
+                        <option value="Dispositivos Médicos">Dispositivos Médicos</option>
+                    </select>
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="prod-precio" class="form-label">
+                            Precio Unitario (S/) <span class="required-mark">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="prod-precio"
+                            name="precio"
+                            class="form-control mono-text"
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0.10"
+                            max="99999.99"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prod-stock" class="form-label">
+                            Stock Inicial <span class="required-mark">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="prod-stock"
+                            name="stock"
+                            class="form-control mono-text"
+                            placeholder="50"
+                            step="1"
+                            min="0"
+                            max="99999"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prod-stock-minimo" class="form-label">
+                            Stock Mínimo (Alerta) <span class="required-mark">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="prod-stock-minimo"
+                            name="stock_minimo"
+                            class="form-control mono-text"
+                            value="10"
+                            step="1"
+                            min="1"
+                            max="9999"
+                            required>
+                    </div>
+                </div>
+
+                <p class="form-help-text">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    Si el <strong>Stock Inicial</strong> es menor o igual al <strong>Stock Mínimo</strong>, el sistema activará una alerta preventiva de reposición automáticamente.
+                </p>
+
+                <footer class="modal-footer">
+                    <button
+                        type="button"
+                        id="btn-cancelar-modal"
+                        class="btn btn-outline">
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        id="btn-guardar-producto"
+                        class="btn btn-primary hvr-grow hvr-sweep-to-right">
+                        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+                        <span>Guardar Medicamento</span>
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         7. CONTENEDOR DE NOTIFICACIONES TOAST Y COMPROBANTES EMITIDOS
+         =================================================================== -->
+    <div
+        id="toast-container"
+        class="toast-container"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true">
+    </div>
+
+    <!-- ===================================================================
+         8. FOOTER INSTITUCIONAL
+         =================================================================== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>
+                <strong>Botica &ldquo;Nova Salud&rdquo; (FarmaPlus)</strong> &mdash; Sistema Web de Gestión de Inventario y Punto de Venta (POS).
+            </p>
+            <p class="footer-meta">
+                Arquitectura Desacoplada: Node.js + Express + MySQL 8.x &bull; Anime.js &bull; Hover.css &bull; Web Audio API
+            </p>
+        </div>
+    </footer>
+
+    <!-- ===================================================================
+         SCRIPTS (Diferidos para máximo puntaje en Google Lighthouse / LCP)
+         =================================================================== -->
+    <!-- Visor 3D Spline (Módulo ES asíncrono - Sección 5.1 del PLAN.md) -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@latest/build/spline-viewer.js"></script>
+
+    <!-- Librería de animaciones Anime.js (Sección 5.1 del PLAN.md) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" defer></script>
+
+    <!-- Controlador Cliente Principal (Fase 4 - public/app.js) -->
+    <script src="app.js" defer></script>
+</body>
+</html>
+
