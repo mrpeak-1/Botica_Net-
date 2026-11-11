@@ -157,7 +157,7 @@ app.post('/api/login', async (req, res) => {
 
 // =========================================================================
 // ENDPOINT 1: Listar Catálogo de Productos (GET /api/productos)
-// Contrato PLAN.md Sección 4.1 — Join FEFO 1:1 sin duplicidad de filas
+// Contrato PLAN.md Sección 4.1 — Compatible con MySQL 8 y TiDB Cloud
 // =========================================================================
 app.get('/api/productos', async (req, res) => {
     try {
@@ -169,13 +169,18 @@ app.get('/api/productos', async (req, res) => {
                    l.codigo_lote, DATE_FORMAT(l.fecha_vencimiento, '%Y-%m-%d') AS fecha_vencimiento, l.ubicacion_anaquel
             FROM productos p
             LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-            LEFT JOIN lotes l ON l.id_lote = (
-                SELECT l2.id_lote
-                FROM lotes l2
-                WHERE l2.id_producto = p.id_producto
-                ORDER BY (l2.stock_lote > 0) DESC, l2.fecha_vencimiento ASC, l2.id_lote ASC
-                LIMIT 1
-            )
+            LEFT JOIN (
+                SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel
+                FROM (
+                    SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY id_producto 
+                               ORDER BY (stock_lote > 0) DESC, fecha_vencimiento ASC, id_lote ASC
+                           ) AS rn
+                    FROM lotes
+                ) sub
+                WHERE sub.rn = 1
+            ) l ON l.id_producto = p.id_producto
             ${whereClause}
             ORDER BY p.nombre ASC;
         `;
@@ -192,7 +197,7 @@ app.get('/api/productos', async (req, res) => {
 
 // =========================================================================
 // ENDPOINT 2: Listar Productos con Alerta de Reposición (GET /api/alertas)
-// Contrato PLAN.md Sección 4.2 (stock <= stock_minimo) — Join FEFO 1:1
+// Contrato PLAN.md Sección 4.2 — Compatible con MySQL 8 y TiDB Cloud
 // =========================================================================
 app.get('/api/alertas', async (req, res) => {
     try {
@@ -202,13 +207,18 @@ app.get('/api/alertas', async (req, res) => {
                    l.codigo_lote, DATE_FORMAT(l.fecha_vencimiento, '%Y-%m-%d') AS fecha_vencimiento, l.ubicacion_anaquel
             FROM productos p
             LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-            LEFT JOIN lotes l ON l.id_lote = (
-                SELECT l2.id_lote
-                FROM lotes l2
-                WHERE l2.id_producto = p.id_producto
-                ORDER BY (l2.stock_lote > 0) DESC, l2.fecha_vencimiento ASC, l2.id_lote ASC
-                LIMIT 1
-            )
+            LEFT JOIN (
+                SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel
+                FROM (
+                    SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY id_producto 
+                               ORDER BY (stock_lote > 0) DESC, fecha_vencimiento ASC, id_lote ASC
+                           ) AS rn
+                    FROM lotes
+                ) sub
+                WHERE sub.rn = 1
+            ) l ON l.id_producto = p.id_producto
             WHERE p.stock <= p.stock_minimo AND p.activo = 1
             ORDER BY p.stock ASC;
         `;
@@ -391,13 +401,18 @@ app.put('/api/productos/:id/stock', async (req, res) => {
                     l.codigo_lote, DATE_FORMAT(l.fecha_vencimiento, '%Y-%m-%d') AS fecha_vencimiento, l.ubicacion_anaquel
              FROM productos p
              LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-             LEFT JOIN lotes l ON l.id_lote = (
-                 SELECT l2.id_lote
-                 FROM lotes l2
-                 WHERE l2.id_producto = p.id_producto
-                 ORDER BY (l2.stock_lote > 0) DESC, l2.fecha_vencimiento ASC, l2.id_lote ASC
-                 LIMIT 1
-             )
+             LEFT JOIN (
+                 SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel
+                 FROM (
+                     SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY id_producto 
+                                ORDER BY (stock_lote > 0) DESC, fecha_vencimiento ASC, id_lote ASC
+                            ) AS rn
+                     FROM lotes
+                 ) sub
+                 WHERE sub.rn = 1
+             ) l ON l.id_producto = p.id_producto
              WHERE p.id_producto = ?;`,
             [idProducto]
         );
@@ -503,13 +518,18 @@ app.put('/api/productos/:id', async (req, res) => {
                     l.codigo_lote, DATE_FORMAT(l.fecha_vencimiento, '%Y-%m-%d') AS fecha_vencimiento, l.ubicacion_anaquel
              FROM productos p
              LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-             LEFT JOIN lotes l ON l.id_lote = (
-                 SELECT l2.id_lote
-                 FROM lotes l2
-                 WHERE l2.id_producto = p.id_producto
-                 ORDER BY (l2.stock_lote > 0) DESC, l2.fecha_vencimiento ASC, l2.id_lote ASC
-                 LIMIT 1
-             )
+             LEFT JOIN (
+                 SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel
+                 FROM (
+                     SELECT id_producto, codigo_lote, fecha_vencimiento, ubicacion_anaquel,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY id_producto 
+                                ORDER BY (stock_lote > 0) DESC, fecha_vencimiento ASC, id_lote ASC
+                            ) AS rn
+                     FROM lotes
+                 ) sub
+                 WHERE sub.rn = 1
+             ) l ON l.id_producto = p.id_producto
              WHERE p.id_producto = ?;`,
             [idProducto]
         );
