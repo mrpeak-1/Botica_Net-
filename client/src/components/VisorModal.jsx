@@ -57,8 +57,12 @@ export default function VisorModal({ isOpen, onClose }) {
   }, [isOpen, onClose]);
 
   const visorUrl = useMemo(() => {
-    const clean = (tunnelBase || '').trim().replace(/\/+$/, '');
-    if (!clean) return `${DEFAULT_TUNNEL_URL}/?visor=cliente`;
+    let clean = (tunnelBase || '').trim().replace(/\/+$/, '');
+    if (!clean) clean = DEFAULT_TUNNEL_URL;
+    // Garantiza protocolo HTTPS estricto para que los lectores móviles lo reconozcan como URL directa
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      clean = `https://${clean}`;
+    }
     if (clean.includes('?visor=')) return clean;
     return `${clean}/?visor=cliente`;
   }, [tunnelBase]);
@@ -208,6 +212,26 @@ export default function VisorModal({ isOpen, onClose }) {
                     className="vm-link-edit"
                   >
                     {isEditing ? '✓ Guardar enlace' : '✏️ Cambiar URL del túnel'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTunnel('https://botica-net.vercel.app')}
+                    className="vm-link-edit"
+                    style={{
+                      background: 'rgba(16, 185, 129, 0.15)',
+                      color: '#10b981',
+                      border: '1px solid rgba(16, 185, 129, 0.35)',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title="Configura el QR permanentemente al enlace de Vercel"
+                  >
+                    <span>⚡ Usar QR Vercel</span>
                   </button>
                   <span className="vm-tunnel-cli-hint">
                     Comando en terminal: <code>npm run tunnel</code>

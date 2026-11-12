@@ -1160,6 +1160,12 @@ app.get('/api/consulta-dni/:dni', async (req, res) => {
                     mensaje: 'Identidad validada con RENIEC en tiempo real.'
                 });
             }
+        } else if (apiRes.status === 404) {
+            // Si la API responde que el DNI no existe en el padrón, informar con precisión
+            return res.status(404).json({
+                success: false,
+                message: `El DNI ${rawDni} no fue encontrado en el padrón electoral o no se encuentra activo.`
+            });
         }
     } catch (error) {
         console.warn(`[RENIEC] Consulta externa no disponible (${error?.message || 'timeout'}). Activando respaldo offline...`);

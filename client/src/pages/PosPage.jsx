@@ -474,8 +474,8 @@ export default function PosPage({ sesion, onInventoryMutated }) {
     if (soloNumeros.length !== 8) {
       setAvisoUI({
         tipo: 'warn',
-        texto: 'Ingrese un número de DNI válido de 8 dígitos para consultar.',
-        detalle: 'O escriba directamente el nombre o RUC del paciente.'
+        texto: 'Ingrese un número de DNI válido de exactamente 8 dígitos.',
+        detalle: 'Debe contener solo dígitos numéricos.'
       });
       return;
     }
@@ -1115,9 +1115,13 @@ export default function PosPage({ sesion, onInventoryMutated }) {
                       ref={dniInputRef}
                       id="pos-cliente-input"
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={clienteDoc}
                       onChange={(e) => {
-                        setClienteDoc(e.target.value);
+                        // Validación estricta: solo números y máximo 8 dígitos
+                        const soloDigitos = e.target.value.replace(/\D/g, '').slice(0, 8);
+                        setClienteDoc(soloDigitos);
                         if (dniVerificado) setDniVerificado(null);
                       }}
                       onKeyDown={(e) => {
@@ -1126,9 +1130,9 @@ export default function PosPage({ sesion, onInventoryMutated }) {
                           handleBuscarDni();
                         }
                       }}
-                      placeholder="DNI (8 dígitos) o paciente..."
+                      placeholder="DNI (8 dígitos)..."
                       className="erp-input pos-dni-field"
-                      maxLength={100}
+                      maxLength={8}
                       autoComplete="off"
                       autoCorrect="off"
                       autoCapitalize="off"
